@@ -1,79 +1,84 @@
 #!/usr/bin/env python3
 
+
 from ortools.sat.python import cp_model
 
-num_employees = 6
-num_shifts = 2
-num_days = 5
-all_employees = range(num_employees)
-all_shifts = range(num_shifts)
-all_days = range(num_days)
+def generate_shift_schedule(num_employees, num_shifts, num_days, solution_limit=5):
+    """
+    Generates shift schedules based on the provided parameters.
 
-model = cp_model.CpModel()
+    Args:
+        num_employees (int): Number of employees.
+        num_shifts (int): Number of shifts per day.
+        num_days (int): Number of days to schedule.
+        solution_limit (int): Maximum number of solutions to return.
 
-shifts = {}
-for n in all_employees:
+    Returns:
+        List[Dict]: A list of solutions, each solution is a dictionary with day numbers as keys and lists of (employee, shift) tuples as values.
+    """
+    all_employees = range(num_employees)
+    all_shifts = range(num_shifts)
+    all_days = range(num_days)
+
+    model = cp_model.CpModel()
+
+    # Create shift variables.
+    shifts = {}
+    for n in all_employees:
+        for d in all_days:
+            for s in all_shifts:
+                shifts[(n, d, s)] = model.NewBoolVar(f'shift_n{n}_d{d}_s{s}')
+
+    # Each shift is assigned to exactly one employee per day.
     for d in all_days:
         for s in all_shifts:
-            shifts[(n, d, s)] = model.NewBoolVar(f"shift_n{n}_d{d}_s{s}")
+            model.AddExactlyOne(shifts[(n, d, s)] for n in all_employees)
 
-for d in all_days:
-    for s in all_shifts:
-        model.AddExactlyOne(shifts[(n, d, s)] for n in all_employees)
+    # Fair distribution of shifts among employees.
+    min_shifts_per_employee = (num_shifts * num_days) // num_employees
+    max_shifts_per_employee = min_shifts_per_employee + (1 if (num_shifts * num_days) % num_employees > 0 else 0)
 
-min_shifts_per_employee = (num_shifts * num_days) // num_employees
-if num_shifts * num_days % num_employees == 0:
-    max_shifts_per_employee = min_shifts_per_employee
-else:
-    max_shifts_per_employee = min_shifts_per_employee + 1
+    for n in all_employees:
+        num_shifts_worked = sum(shifts[(n, d, s)] for d in all_days for s in all_shifts)
+        model.Add(min_shifts_per_employee <= num_shifts_worked)
+        model.Add(num_shifts_worked <= max_shifts_per_employee)
 
-for n in all_employees:
-    shifts_worked = []
-    for d in all_days:
-        for s in all_shifts:
-            shifts_worked.append(shifts[(n, d, s)])
-    model.Add(min_shifts_per_employee <= sum(shifts_worked))
-    model.Add(sum(shifts_worked) <= max_shifts_per_employee)
+    # Solver setup.
+    solver = cp_model.CpSolver()
+    solver.parameters.linearization_level = 0
+    solver.parameters.enumerate_all_solutions = True
 
-solver = cp_model.CpSolver()
-solver.parameters.linearization_level = 0
-solver.parameters.enumerate_all_solutions = True
+    # Solution collector.
+    class SolutionPrinter(cp_model.CpSolverSolutionCallback):
+        def __init__(self, shifts, num_employees, num_days, num_shifts, limit):
+            cp_model.CpSolverSolutionCallback.__init__(self)
+            self._shifts = shifts
+            self._num_employees = num_employees
+            self._num_days = num_days
+            self._num_shifts = num_shifts
+            self._solution_count = 0
+            self._solution_limit = limit
+            self.solutions = []
 
-class EmployeesPartialSolutionPrinter(cp_model.CpSolverSolutionCallback):
-    """Print intermediate solutions."""
+        def on_solution_callback(self):
+            self._solution_count += 1
+            solution = {}
+            for d in range(self._num_days):
+                day_assignments = []
+                for n in range(self._num_employees):
+                    for s in range(self._num_shifts):
+                        if self.Value(self._shifts[(n, d, s)]):
+                            day_assignments.append((n, s))
+                solution[d] = day_assignments
+            self.solutions.append(solution)
+            if self._solution_count >= self._solution_limit:
+                self.StopSearch()
 
-    def __init__(self, shifts, num_employees, num_days, num_shifts, limit):
-        cp_model.CpSolverSolutionCallback.__init__(self)
-        self._shifts = shifts
-        self._num_employees = num_employees
-        self._num_days = num_days
-        self._num_shifts = num_shifts
-        self._solution_count = 0
-        self._solution_limit = limit
+        def solution_count(self):
+            return self._solution_count
 
-    def on_solution_callback(self):
-        self._solution_count += 1
-        print(f"Solution {self._solution_count}")
-        for d in range(self._num_days):
-            print(f"Day {d}")
-            for n in range(self._num_employees):
-                is_working = False
-                for s in range(self._num_shifts):
-                    if self.Value(self._shifts[(n, d, s)]):
-                        is_working = True
-                        print(f"  Employee {n} works shift {s}")
-                if not is_working:
-                    print(f"  Employee {n} does not work")
-        if self._solution_count >= self._solution_limit:
-            print(f"Stop search after {self._solution_limit} solutions")
-            self.StopSearch()
+    solution_printer = SolutionPrinter(shifts, num_employees, num_days, num_shifts, solution_limit)
+    solver.Solve(model, solution_printer)
 
-    def solutionCount(self):
-        return self._solution_count
-
-solution_limit = 5
-solution_printer = EmployeesPartialSolutionPrinter(
-    shifts, num_employees, num_days, num_shifts, solution_limit
-)
-
-solver.Solve(model, solution_printer) 
+    # Return the collected solutions.
+    return solution_printer.solutions
