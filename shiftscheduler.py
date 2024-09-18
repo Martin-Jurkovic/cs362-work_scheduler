@@ -2,9 +2,9 @@
 
 from ortools.sat.python import cp_model
 
-num_employees = 4
-num_shifts = 3
-num_days = 3
+num_employees = 6
+num_shifts = 2
+num_days = 5
 all_employees = range(num_employees)
 all_shifts = range(num_shifts)
 all_days = range(num_days)
