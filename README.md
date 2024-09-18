@@ -1,6 +1,7 @@
 # cs362-work_scheduler
 
-#run these commands before running progrma:
+#run these commands before running program:
+
 #pip install Flask
 #python -m pip install ortools
 
