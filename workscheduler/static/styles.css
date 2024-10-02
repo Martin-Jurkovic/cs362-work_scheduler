@@ -1,0 +1,318 @@
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #1d1d1f;
+    background-color: #ffffff;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0071e3; /* Apple's blue accent color */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    margin: 0;
+}
+
+p {
+    margin: 0;
+}
+
+button {
+    font-family: inherit;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #0071e3;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+input, select, textarea {
+    font-family: inherit;
+    font-size: 16px;
+    color: #1d1d1f;
+    border: 1px solid #d2d2d7;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #0071e3;
+    outline: none;
+}
+
+.container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Navigation Bar Styles */
+nav {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: saturate(180%) blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #d2d2d7;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li.nav-logo {
+    margin-right: auto;
+}
+
+nav ul li a {
+    display: block;
+    color: #1d1d1f;
+    font-size: 17px;
+    padding: 20px 0;
+}
+
+nav ul li a:hover {
+    color: #0071e3;
+}
+
+/* Logo Styles */
+.nav-logo img {
+    height: 24px;
+    width: auto;
+    margin: 0;
+    padding: 20px 0;
+}
+
+/* Login Page Styles */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f5f5f7;
+}
+
+.login-box {
+    background-color: #ffffff;
+    padding: 40px;
+    border: 1px solid #d2d2d7;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    font-size: 28px;
+    margin-bottom: 40px;
+}
+
+.login-box .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.login-box label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+    width: 100%;
+}
+
+.login-box button {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.error-message {
+    color: #d70015;
+    margin-top: 20px;
+}
+
+/* Content Container */
+.content-container {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Profile Page Styles */
+.profile-info {
+    text-align: left;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.profile-info p {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.profile-info strong {
+    display: inline-block;
+    width: 150px;
+    color: #6e6e73;
+}
+
+.button-group {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.button-group a.btn {
+    display: inline-block;
+    color: #0071e3;
+    background-color: transparent;
+    border: 1px solid #0071e3;
+    padding: 12px 24px;
+    border-radius: 8px;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.button-group a.btn:hover {
+    background-color: #f0f0f3;
+}
+
+/* Forms */
+form .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+form .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+form .input-group input,
+form .input-group select,
+form .input-group textarea {
+    width: 100%;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+th, td {
+    border-bottom: 1px solid #d2d2d7;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    font-size: 17px;
+    color: #6e6e73;
+}
+
+td {
+    font-size: 17px;
+    color: #1d1d1f;
+}
+
+tr:hover {
+    background-color: #f5f5f7;
+}
+
+/* Calendar Styles */
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #d2d2d7;
+    margin-top: 40px;
+}
+
+.calendar-day {
+    background-color: #ffffff;
+    min-height: 120px;
+    padding: 10px;
+    position: relative;
+}
+
+.calendar-day-header {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.shift {
+    background-color: #0071e3;
+    color: #ffffff;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.off {
+    background-color: #d2d2d7;
+    color: #1d1d1f;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav ul li {
+        margin: 0 10px;
+    }
+    .login-box {
+        padding: 20px;
+    }
+    .content-container {
+        padding: 20px 10px;
+    }
+    .profile-info p {
+        font-size: 16px;
+    }
+    .button-group a.btn {
+        padding: 10px 20px;
+    }
+    .calendar-day {
+        min-height: 100px;
+    }
+    .calendar-day-header {
+        font-size: 14px;
+    }
+    .shift, .off {
+        font-size: 14px;
+    }
+}

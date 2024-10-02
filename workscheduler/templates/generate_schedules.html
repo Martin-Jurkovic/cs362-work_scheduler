@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generate Schedules - Work Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .generate-button {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    {% include 'navbar.html' %}
+    <!-- Main Content -->
+    <div class="content-container">
+        <h1>Generate Schedules</h1>
+        <form action="/generate_schedules" method="POST">
+            <button type="submit">Generate Schedule</button>
+        </form>
+    </div>
+</body>
+</html>

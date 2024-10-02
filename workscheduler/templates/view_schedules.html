@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Schedule - Work Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    {% include 'navbar.html' %}
+    <!-- Main Content -->
+    <div class="content-container">
+        <h1>Your Schedule for {{ current_week }}</h1>
+        <div class="calendar">
+            {% for day in week_dates %}
+            <div class="calendar-day">
+                <div class="calendar-day-header">
+                    {{ day.strftime('%A') }}<br>{{ day.strftime('%Y-%m-%d') }}
+                </div>
+                {% set shifts_for_day = user_schedule|selectattr('date', 'equalto', day.strftime('%Y-%m-%d'))|list %}
+                {% if shifts_for_day %}
+                    {% set shift = shifts_for_day[0] %}
+                    <div class="shift">
+                        {{ shift.start_time | datetimeformat }} - {{ shift.end_time | datetimeformat }}
+                    </div>
+                {% else %}
+                    <div class="off">
+                        Off
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

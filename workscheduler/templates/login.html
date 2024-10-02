@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Work Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <!-- Logo Image -->
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="login-logo">
+            <h2>Sign in to your account</h2>
+            <form action="/login" method="POST">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required autofocus>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <!-- Error message display -->
+                {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+                {% endif %}
+                <div class="input-group">
+                    <button type="submit">Sign In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
