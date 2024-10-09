@@ -9,7 +9,9 @@
     <div class="login-container">
         <div class="login-box">
             <!-- Logo Image -->
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="login-logo">
+             <div class="login-logo">
+                <img class="center-fit" src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+             </div>
             <h2>Sign in to your account</h2>
             <form action="/login" method="POST">
                 <div class="input-group">
