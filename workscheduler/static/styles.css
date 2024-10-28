@@ -1,66 +1,29 @@
+/* styles.css */
 
 /* Global Styles */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: #1d1d1f;
-    background-color: #ffffff;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #0071e3; /* Apple's blue accent color */
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
-    margin: 0;
-}
-
-p {
-    margin: 0;
-}
-
-button {
-    font-family: inherit;
-    font-size: 16px;
-    color: #ffffff;
-    background-color: #0071e3;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #005bb5;
-}
-
-input, select, textarea {
-    font-family: inherit;
-    font-size: 16px;
-    color: #1d1d1f;
-    border: 1px solid #d2d2d7;
-    padding: 12px;
-    border-radius: 8px;
-    width: 100%;
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
-input:focus, select:focus, textarea:focus {
-    border-color: #0071e3;
-    outline: none;
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+                 Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #1d1d1f;
+    background-color: #f5f5f7;
 }
 
-.container {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 20px;
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 /* Navigation Bar Styles */
@@ -73,258 +36,407 @@ nav {
     border-bottom: 1px solid #d2d2d7;
 }
 
-nav ul {
-    list-style-type: none;
-    margin: 0;
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 0 20px;
-    display: flex;
-    align-items: center;
-}
-
-nav ul li {
-    margin: 0 20px;
-}
-
-nav ul li.nav-logo {
-    margin-right: auto;
-}
-
-nav ul li a {
-    display: block;
-    color: #1d1d1f;
-    font-size: 17px;
-    padding: 20px 0;
-}
-
-nav ul li a:hover {
-    color: #0071e3;
-}
-
-/* Logo Styles */
-.nav-logo img {
-    height: 70px;
-    width: auto;
-    margin: 0;
-    padding: 20px 0;
-}
-
-.login-logo {
-    display: grid;
-    height: 100%;
-}
-
-.center-fit {
-    max-width: 100%;
-    max-height: 100%;
-    margin: auto;
-}
-
-/* Login Page Styles */
-.login-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f5f5f7;
-}
-
-.login-box {
-    background-color: #ffffff;
-    padding: 40px;
-    border: 1px solid #d2d2d7;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-}
-
-.login-box h2 {
-    font-size: 28px;
-    margin-bottom: 40px;
-}
-
-.login-box .input-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.login-box label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.login-box input[type="text"],
-.login-box input[type="password"] {
-    width: 100%;
-}
-
-.login-box button {
-    width: 100%;
-    margin-top: 20px;
-}
-
-.error-message {
-    color: #d70015;
-    margin-top: 20px;
-}
-
-/* Content Container */
-.content-container {
-    padding: 40px 20px;
-    text-align: center;
-}
-
-/* Profile Page Styles */
-.profile-info {
-    text-align: left;
-    margin: 0 auto;
-    max-width: 600px;
-}
-
-.profile-info p {
-    font-size: 18px;
-    margin-bottom: 16px;
-}
-
-.profile-info strong {
-    display: inline-block;
-    width: 150px;
-    color: #6e6e73;
-}
-
-.button-group {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-}
-
-.button-group a.btn {
-    display: inline-block;
-    color: #0071e3;
-    background-color: transparent;
-    border: 1px solid #0071e3;
-    padding: 12px 24px;
-    border-radius: 8px;
-    margin: 0 10px;
-    text-decoration: none;
-}
-
-.button-group a.btn:hover {
-    background-color: #f0f0f3;
-}
-
-/* Forms */
-form .input-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-form .input-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-form .input-group input,
-form .input-group select,
-form .input-group textarea {
-    width: 100%;
-}
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 40px;
-}
-
-th, td {
-    border-bottom: 1px solid #d2d2d7;
-    padding: 12px;
-    text-align: left;
-}
-
-th {
-    font-size: 17px;
-    color: #6e6e73;
-}
-
-td {
-    font-size: 17px;
-    color: #1d1d1f;
-}
-
-tr:hover {
-    background-color: #f5f5f7;
-}
-
-/* Calendar Styles */
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background-color: #d2d2d7;
-    margin-top: 40px;
-}
-
-.calendar-day {
-    background-color: #ffffff;
-    min-height: 120px;
-    padding: 10px;
     position: relative;
 }
 
-.calendar-day-header {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 10px;
+.nav-logo {
+    display: flex;
+    align-items: center;
 }
 
-.shift {
+.nav-logo img {
+    height: 60px;
+    width: auto;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.nav-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links li {
+    margin: 0 20px;
+}
+
+.nav-links li a {
+    display: block;
+    color: #1d1d1f;
+    font-size: 17px;
+    padding: 20px 0;
+}
+
+.nav-links li a:hover {
+    color: #0071e3;
+}
+
+/* Hide the checkbox */
+#menu-toggle {
+    display: none;
+}
+
+/* Menu Icon Styles */
+.menu-icon {
+    display: none; /* Hidden on large screens */
+    cursor: pointer;
+    padding: 10px;
+}
+
+.menu-icon div {
+    width: 35px;
+    height: 5px;
+    background-color: #333;
+    margin: 6px 0;
+    transition: 0.4s;
+}
+
+/* Menu Icon Animation */
+#menu-toggle:checked + .menu-icon .bar1 {
+    transform: translate(0, 11px) rotate(-45deg);
+}
+
+#menu-toggle:checked + .menu-icon .bar2 {
+    opacity: 0;
+}
+
+#menu-toggle:checked + .menu-icon .bar3 {
+    transform: translate(0, -11px) rotate(45deg);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .menu-icon {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 100%; /* Positioning the dropdown at the bottom of the nav bar */
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.95);
+        flex-direction: column;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+        margin: 0;
+    }
+
+    .nav-links li a {
+        padding: 15px 0;
+        border-top: 1px solid #d2d2d7;
+    }
+
+    /* Show menu when checkbox is checked */
+    #menu-toggle:checked ~ .nav-links {
+        max-height: 500px; /* Adjust as needed */
+        transition: max-height 0.5s ease-in;
+    }
+}
+
+/* Content Container for Other Pages */
+.content-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content-container h1 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* Login Container */
+.login-container {
+    width: 90%; 
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+/* Logo Container */
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-container img {
+    height: 100px; /* Adjust the logo size as needed */
+    width: auto;
+}
+
+/* Login Form Styles */
+.login-form {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.login-form .input-group {
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d2d2d7;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.login-form .btn {
+    width: 100%;
+    padding: 12px;
     background-color: #0071e3;
     color: #ffffff;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 16px;
-    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
 }
 
-.off {
-    background-color: #d2d2d7;
-    color: #1d1d1f;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 16px;
-    margin-top: 10px;
+.login-form .btn:hover {
+    background-color: #005bb5;
 }
 
-/* Responsive Design */
+/* Flash Messages */
+.flash-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.flash-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flash-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0071e3;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #005bb5;
+}
+
+/* Danger Button */
+.btn-danger {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Button Group Styles */
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.button-group .btn {
+    flex: 0 1 auto;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table thead {
+    background-color: #f5f5f7;
+}
+
+table th,
+table td {
+    padding: 12px 15px;
+    border: 1px solid #d2d2d7;
+    text-align: left;
+}
+
+table th {
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Schedule Table Styles */
+.schedule-table {
+    overflow-x: auto;
+}
+
+.schedule-table table {
+    min-width: 600px;
+}
+
+.schedule-table th,
+.schedule-table td {
+    text-align: center;
+}
+
+/* Generate Schedule Form */
+.generate-schedule-form {
+    margin: 20px 0;
+    text-align: center;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f5f5f7;
+    border-top: 1px solid #d2d2d7;
+    margin-top: 40px;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    nav ul li {
-        margin: 0 10px;
-    }
-    .login-box {
+    .content-container,
+    .login-container {
+        margin: 20px;
         padding: 20px;
     }
-    .content-container {
-        padding: 20px 10px;
+
+    .nav-links {
+        top: 100%;
     }
-    .profile-info p {
-        font-size: 16px;
+}
+
+@media (max-width: 480px) {
+    .content-container,
+    .login-container {
+        margin: 10px;
+        padding: 15px;
     }
-    .button-group a.btn {
-        padding: 10px 20px;
-    }
-    .calendar-day {
-        min-height: 100px;
-    }
-    .calendar-day-header {
-        font-size: 14px;
-    }
-    .shift, .off {
-        font-size: 14px;
+}
+
+/* Form Styles */
+.edit-profile-form,
+.reset-password-form,
+.add-employee-form,
+.edit-employee-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d2d2d7;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: vertical; /* Allows textarea to be resized vertically */
+}
+
+.input-group textarea {
+    min-height: 80px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #0071e3;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #005bb5;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Adjustments for Smaller Screens */
+@media (max-width: 768px) {
+    .edit-profile-form,
+    .reset-password-form,
+    .add-employee-form,
+    .edit-employee-form {
+        padding: 0 15px;
     }
 }

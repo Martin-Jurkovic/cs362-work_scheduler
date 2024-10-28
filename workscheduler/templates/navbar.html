@@ -1,17 +1,29 @@
+<!-- templates/navbar.html -->
 <nav>
-    <ul>
-        <li class="nav-logo">
-            <!-- Logo Image -->
+    <div class="nav-container">
+        <!-- Logo -->
+        <div class="nav-logo">
             <a href="/home">
                 <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
             </a>
-        </li>
-        <li><a href="/home">Home</a></li>
-        <li><a href="/profile">Profile</a></li>
-        <li><a href="/view_schedules">Schedules</a></li>
-        {% if role == 'admin' %}
-            <li><a href="/generate_schedules">Generate Schedules</a></li>
-        {% endif %}
-        <li><a href="/logout">Logout</a></li>
-    </ul>
+        </div>
+        <!-- Menu Toggle Checkbox -->
+        <input type="checkbox" id="menu-toggle">
+        <!-- Menu Icon -->
+        <label for="menu-toggle" class="menu-icon">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </label>
+        <!-- Navigation Links -->
+        <ul class="nav-links">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/view_schedules">Schedules</a></li>
+            {% if role == 'admin' %}
+                <li><a href="/manage_employees">Manage Employees</a></li>
+            {% endif %}
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
 </nav>

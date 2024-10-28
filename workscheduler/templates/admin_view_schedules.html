@@ -1,9 +1,8 @@
-<!-- templates/view_schedules.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Schedule - Work Scheduler</title>
+    <title>Schedules - Work Scheduler</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -11,23 +10,39 @@
     {% include 'navbar.html' %}
     <!-- Main Content -->
     <div class="content-container">
-        <h1>My Schedule for {{ current_week }}</h1>
+        <h1>Schedules for {{ current_week }}</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+    <!-- Generate Schedules Button -->
+    <form method="POST" class="generate-schedule-form">
+        <button type="submit" class="btn">Generate Schedules</button>
+    </form>
+
+        <!-- Schedules Table -->
         <div class="schedule-table">
             <table>
                 <thead>
                     <tr>
+                        <th>Employee</th>
                         {% for date in week_dates %}
                         <th>{{ date.strftime('%a<br>%b %d')|safe }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
+                    {% for username, schedule in schedules.items() %}
                     <tr>
+                        <td>{{ username }}</td>
                         {% for date in week_dates %}
                         {% set date_str = date.strftime('%Y-%m-%d') %}
                         <td>
-                            {% if date_str in user_schedule %}
-                                {% set shift = user_schedule[date_str] %}
+                            {% if date_str in schedule %}
+                                {% set shift = schedule[date_str] %}
                                 {{ shift.start_time|datetimeformat }} - {{ shift.end_time|datetimeformat }}
                             {% else %}
                                 Off
@@ -35,6 +50,7 @@
                         </td>
                         {% endfor %}
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
