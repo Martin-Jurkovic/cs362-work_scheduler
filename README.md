@@ -18,8 +18,7 @@ After install these packages below:
 
 - python3 -m pip install ortools
 
-Initialize the Database:
-In bash:
+Initialize the Database in bash:
 - flask init-db
 - Creates the database file for the website
 - Default admin user credentials
