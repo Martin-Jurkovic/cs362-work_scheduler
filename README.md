@@ -6,17 +6,9 @@ Create a virtual environment: (Optional but Recommended)
 - source venv/bin/activate
 - For Windows: venv\Scripts\activate
 
-After install these packages below:
+Afterm run this command that installs the required packages:
 
-- python3 -m pip install Flask
-
-- python3 -m pip install Flask-Login
-
-- python3 -m pip install Flask-SQLAlchemy
-
-- python3 -m pip install Werkzeug
-
-- python3 -m pip install ortools
+python3 -m pip install -r requirements.txt
 
 Initialize the Database in bash:
 - flask init-db
