@@ -1,0 +1,35 @@
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Work Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <a href="/">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+            </a>
+        </div>
+        <h1>Login</h1>
+        {% if error %}
+            <div class="flash-message error">{{ error }}</div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </div>
+</body>
+</html>
