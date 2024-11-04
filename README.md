@@ -6,7 +6,7 @@ Create a virtual environment: (Optional but Recommended)
 - source venv/bin/activate
 - For Windows: venv\Scripts\activate
 
-Afterm run this command that installs the required packages:
+After run this command that installs the required packages:
 
 python3 -m pip install -r requirements.txt
 
