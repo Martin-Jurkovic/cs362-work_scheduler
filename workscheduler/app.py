@@ -7,8 +7,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import click
 from flask.cli import with_appcontext
 
-from user import User, db
-
+from classes.user import User, db
+from classes.schedule import Schedule
+from core.decorators import login_required, admin_required
+from core.utils import generate_shifts, get_week_dates, datetimeformat  # Import generate_shifts function
 app = Flask(__name__)
 app.secret_key = 'your_secure_random_secret_key'  # Replace with a secure, randomly generated secret key
 
@@ -20,119 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 
-# Schedule model
-class Schedule(db.Model):
-    __tablename__ = 'schedules'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), db.ForeignKey('users.username'), nullable=False)
-    date = db.Column(db.String(20), nullable=False)
-    start_time = db.Column(db.String(10), nullable=False)
-    end_time = db.Column(db.String(10), nullable=False)
-
-# Decorator to protect routes that require login
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'username' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-# Decorator to ensure the user is an admin
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        user = User.query.filter_by(username=session.get('username')).first()
-        if not user or user.role != 'admin':
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-# Function to get the dates for the upcoming week (Monday to Sunday)
-def get_week_dates():
-    today = datetime.date.today()
-    # Find the next Monday
-    days_until_monday = (7 - today.weekday()) % 7
-    start_day = today + datetime.timedelta(days=days_until_monday)
-    # Get the week dates from Monday to Sunday
-    week_dates = [start_day + datetime.timedelta(days=i) for i in range(7)]
-    return week_dates
-
-# Custom filter to format time in 12-hour format
-def datetimeformat(value):
-    try:
-        # Assuming value is in 'HH:MM' format
-        time_obj = datetime.datetime.strptime(value, '%H:%M')
-        return time_obj.strftime('%I:%M %p')
-    except Exception:
-        return value
-
 app.jinja_env.filters['datetimeformat'] = datetimeformat
-
-# Function to generate shifts using OR-Tools
-def generate_shifts():
-    week_dates = get_week_dates()
-    employees = User.query.filter(User.role != 'admin').all()
-    num_employees = len(employees)
-    if num_employees == 0:
-        return False  # No employees to schedule
-    num_days = len(week_dates)
-    max_shifts_per_employee = 5  # No more than 5 days per week
-    shifts_per_day = 1  # Assuming one shift per day
-
-    # Create the model
-    model = cp_model.CpModel()
-
-    # Variables: shifts[e][d] is True if employee 'e' works on day 'd'
-    shifts = {}
-    for e in range(num_employees):
-        for d in range(num_days):
-            shifts[(e, d)] = model.NewBoolVar(f'shift_e{e}_d{d}')
-
-    # Constraints:
-
-    # Each employee works at most one shift per day (inherent with binary variables)
-
-    # Each employee works at most 5 days in the week
-    for e in range(num_employees):
-        model.Add(sum(shifts[(e, d)] for d in range(num_days)) <= max_shifts_per_employee)
-
-    # Distribute shifts evenly among employees
-    min_shifts_per_employee = (num_days * shifts_per_day) // num_employees
-    for e in range(num_employees):
-        num_shifts_worked = sum(shifts[(e, d)] for d in range(num_days))
-        model.Add(num_shifts_worked >= min_shifts_per_employee)
-
-    # Ensure that each day has the required number of employees
-    for d in range(num_days):
-        model.Add(sum(shifts[(e, d)] for e in range(num_employees)) == shifts_per_day)
-
-    # Solve the model
-    solver = cp_model.CpSolver()
-    status = solver.Solve(model)
-
-    # Store the schedule
-    if status == cp_model.FEASIBLE or status == cp_model.OPTIMAL:
-        # Clear existing schedules for the week
-        Schedule.query.filter(Schedule.date.in_([d.strftime('%Y-%m-%d') for d in week_dates])).delete()
-        for e in range(num_employees):
-            for d in range(num_days):
-                if solver.Value(shifts[(e, d)]) == 1:
-                    day = week_dates[d]
-                    shift_start = datetime.datetime.combine(day, datetime.time(hour=8))
-                    shift_end = shift_start + datetime.timedelta(hours=8)
-                    schedule_entry = Schedule(
-                        username=employees[e].username,
-                        date=day.strftime('%Y-%m-%d'),
-                        start_time=shift_start.strftime('%H:%M'),
-                        end_time=shift_end.strftime('%H:%M')
-                    )
-                    db.session.add(schedule_entry)
-        db.session.commit()
-        return True
-    else:
-        print("No feasible schedule found.")
-        return False
 
 # Route to redirect root URL to login
 @app.route('/')
@@ -374,35 +264,6 @@ def delete_employee(username):
     flash('Employee deleted successfully.', 'success')
     return redirect(url_for('manage_employees'))
 
-# Custom command to initialize the database and create the admin user
-@app.cli.command("init-db")
-@with_appcontext
-def init_db_command():
-    """Initialize the database and create the admin user."""
-    db.create_all()
-
-    # Create the admin user if it doesn't exist
-    if not User.query.filter_by(username='admin').first():
-        admin_user = User(
-            username='admin',
-            first_name='Admin',
-            last_name='User',
-            email='admin@example.com',
-            phone='555-1234',
-            address='123 Admin St',
-            sick_hours=0,
-            pto_hours=0,
-            hourly_rate=0,
-            job_assignment='Administrator',
-            hire_date='2020-01-15',
-            role='admin'
-        )
-        admin_user.set_password('password123')  # Set the admin password
-        db.session.add(admin_user)
-        db.session.commit()
-        click.echo("Initialized the database and created the admin user.")
-    else:
-        click.echo("Admin user already exists.")
 
 if __name__ == '__main__':
     app.run(debug=True)
