@@ -267,6 +267,30 @@ def delete_employee(username):
     flash('Employee deleted successfully.', 'success')
     return redirect(url_for('manage_employees'))
 
+@app.route('/update_shift', methods=['POST'])
+@admin_required
+def update_shift():
+    username = request.form.get('username')
+    date = request.form.get('date')
+    start_time = request.form.get('start_time')
+    end_time = request.form.get('end_time')
+
+    # Update the schedule
+    schedule = Schedule.query.filter_by(
+        username=username,
+        date=date
+    ).first()
+
+    if schedule:
+        schedule.start_time = start_time
+        schedule.end_time = end_time
+        db.session.commit()
+        flash('Shift updated successfully', 'success')
+    else:
+        flash('Shift not found', 'error')
+
+    return redirect(url_for('view_schedules'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

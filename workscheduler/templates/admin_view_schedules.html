@@ -5,7 +5,7 @@
     <title>Schedules - Work Scheduler</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
+<body class="admin-schedule-view">
     <!-- Navigation Bar -->
     {% include 'navbar.html' %}
     <!-- Main Content -->
@@ -18,6 +18,28 @@
             {% endfor %}
           {% endif %}
         {% endwith %}
+
+        <!-- Add at the top of the file, right after the content-container div -->
+        <div id="editShiftModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Shift</h2>
+                <form id="editShiftForm" method="POST" action="{{ url_for('update_shift') }}">
+                    <input type="hidden" id="shift_username" name="username">
+                    <input type="hidden" id="shift_date" name="date">
+                    <div class="form-group">
+                        <label for="start_time">Start Time:</label>
+                        <input type="time" id="start_time" name="start_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_time">End Time:</label>
+                        <input type="time" id="end_time" name="end_time" required>
+                    </div>
+                    <button type="submit" class="schedule-btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
     <!-- Generate Schedules Button -->
     <form method="POST" class="generate-schedule-form">
         <div class="form-group">
@@ -35,7 +57,7 @@
     </form>
 
         <!-- Schedules Table -->
-        <div class="schedule-table">
+        <div class="admin-schedule-table">
             <table>
                 <thead>
                     <tr>
@@ -46,15 +68,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for username, schedule in schedules.items() %}
+                    {% for user, schedule in schedules.items() %}
                     <tr>
-                        <td>{{ username }}</td>
+                        <td>{{ user }}</td>
                         {% for date in week_dates %}
-                        {% set date_str = date.strftime('%Y-%m-%d') %}
-                        <td>
-                            {% if date_str in schedule %}
-                                {% set shift = schedule[date_str] %}
-                                {{ shift.start_time|datetimeformat }} - {{ shift.end_time|datetimeformat }}
+                        <td class="shift-cell" 
+                            onclick="window.editShift(this)" 
+                            data-username="{{ user }}" 
+                            data-date="{{ date.strftime('%Y-%m-%d') }}"
+                            data-start="{{ schedule[date.strftime('%Y-%m-%d')].start_time if date.strftime('%Y-%m-%d') in schedule else '' }}"
+                            data-end="{{ schedule[date.strftime('%Y-%m-%d')].end_time if date.strftime('%Y-%m-%d') in schedule else '' }}">
+                            {% if date.strftime('%Y-%m-%d') in schedule %}
+                                {{ schedule[date.strftime('%Y-%m-%d')].start_time|datetimeformat }} -
+                                {{ schedule[date.strftime('%Y-%m-%d')].end_time|datetimeformat }}
                             {% else %}
                                 Off
                             {% endif %}
@@ -66,5 +92,28 @@
             </table>
         </div>
     </div>
+
+    <!-- Add modal HTML at the bottom of the body -->
+    <div id="editShiftModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Shift</h2>
+            <form id="editShiftForm" method="POST" action="{{ url_for('update_shift') }}">
+                <input type="hidden" id="shift_username" name="username">
+                <input type="hidden" id="shift_date" name="date">
+                <div class="form-group">
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" id="start_time" name="start_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_time">End Time:</label>
+                    <input type="time" id="end_time" name="end_time" required>
+                </div>
+                <button type="submit" class="schedule-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/schedule.js') }}"></script>
 </body>
 </html>
