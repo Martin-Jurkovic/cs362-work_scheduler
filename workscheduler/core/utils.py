@@ -15,15 +15,15 @@ def get_week_dates():
 
 
 # Function to generate shifts using OR-Tools
-def generate_shifts():
+def generate_shifts(shifts_per_day=1, max_shifts_per_employee=5):
     week_dates = get_week_dates()
     employees = User.query.filter(User.role != 'admin').all()
     num_employees = len(employees)
     if num_employees == 0:
         return False  # No employees to schedule
     num_days = len(week_dates)
-    max_shifts_per_employee = 5  # No more than 5 days per week
-    shifts_per_day = 1  # Assuming one shift per day
+    # max_shifts_per_employee = 5  # No more than 5 days per week
+    # shifts_per_day = 1  # Assuming one shift per day
 
     # Create the model
     model = cp_model.CpModel()

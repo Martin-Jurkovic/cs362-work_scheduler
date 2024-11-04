@@ -129,7 +129,10 @@ def view_schedules():
             if not employees:
                 flash('Cannot generate schedules because there are no employees.', 'error')
                 return redirect(url_for('view_schedules'))
-            success = generate_shifts()
+            if request.form['action'] == 'generate':
+                shifts_per_day = int(request.form.get('shifts_per_day', 1))
+                max_shifts = int(request.form.get('max_shifts', 5))
+                success = generate_shifts(shifts_per_day=shifts_per_day, max_shifts_per_employee=max_shifts)
             if success:
                 flash('Schedules generated successfully.', 'success')
                 return redirect(url_for('view_schedules'))
