@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from functools import wraps
 import datetime
 from ortools.sat.python import cp_model
@@ -290,6 +290,20 @@ def update_shift():
         flash('Shift not found', 'error')
 
     return redirect(url_for('view_schedules'))
+
+@app.route('/reassign_shift', methods=['POST'])
+@admin_required
+def reassign_shift():
+    data = request.get_json()
+    shift_id = data.get('shift_id')
+    new_employee = data.get('new_employee')
+    
+    shift = Schedule.query.get(shift_id)
+    if shift:
+        shift.username = new_employee
+        db.session.commit()
+        return jsonify({'status': 'success'})
+    return jsonify({'status': 'error'}), 404
 
 
 if __name__ == '__main__':

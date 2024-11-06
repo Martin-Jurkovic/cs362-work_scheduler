@@ -41,3 +41,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function dragStart(ev) {
+    const shiftData = {
+        shiftId: ev.target.dataset.shiftId,
+        originalEmployee: ev.target.dataset.originalEmployee,
+        date: ev.target.dataset.date
+    };
+    ev.dataTransfer.setData("text/plain", JSON.stringify(shiftData));
+}
+
+function dropShift(ev) {
+    ev.preventDefault();
+    const shiftData = JSON.parse(ev.dataTransfer.getData("text/plain"));
+    const newEmployee = ev.target.closest('td').dataset.employee;
+    const date = ev.target.closest('td').dataset.date;
+
+    // Don't allow drop if same employee
+    if (shiftData.originalEmployee === newEmployee) {
+        return;
+    }
+
+    // Send to server
+    fetch('/reassign_shift', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            shift_id: shiftData.shiftId,
+            new_employee: newEmployee,
+            date: date
+        })
+    }).then(response => {
+        if (response.ok) {
+            window.location.reload();
+        }
+    });
+}

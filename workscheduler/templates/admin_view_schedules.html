@@ -69,20 +69,26 @@
                 </thead>
                 <tbody>
                     {% for user, schedule in schedules.items() %}
-                    <tr>
+                    <tr data-employee="{{ user }}">
                         <td>{{ user }}</td>
                         {% for date in week_dates %}
                         <td class="shift-cell" 
-                            onclick="window.editShift(this)" 
-                            data-username="{{ user }}" 
+                            ondrop="dropShift(event)" 
+                            ondragover="allowDrop(event)"
                             data-date="{{ date.strftime('%Y-%m-%d') }}"
-                            data-start="{{ schedule[date.strftime('%Y-%m-%d')].start_time if date.strftime('%Y-%m-%d') in schedule else '' }}"
-                            data-end="{{ schedule[date.strftime('%Y-%m-%d')].end_time if date.strftime('%Y-%m-%d') in schedule else '' }}">
+                            data-employee="{{ user }}">
                             {% if date.strftime('%Y-%m-%d') in schedule %}
+                            <div class="shift-block" 
+                                 draggable="true" 
+                                 ondragstart="dragStart(event)"
+                                 data-shift-id="{{ schedule[date.strftime('%Y-%m-%d')].id }}"
+                                 data-original-employee="{{ user }}"
+                                 data-date="{{ date.strftime('%Y-%m-%d') }}">
                                 {{ schedule[date.strftime('%Y-%m-%d')].start_time|datetimeformat }} -
                                 {{ schedule[date.strftime('%Y-%m-%d')].end_time|datetimeformat }}
+                            </div>
                             {% else %}
-                                Off
+                            Off
                             {% endif %}
                         </td>
                         {% endfor %}
