@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Work Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    {% include 'navbar.html' %}
+    <!-- Main Content -->
+    <div class="content-container">
+        <h1>Welcome, {{ username }}!</h1>
+        <p>Your role: {{ role | capitalize }}</p>
+    </div>
+</body>
+</html>
