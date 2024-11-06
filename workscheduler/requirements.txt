@@ -1,4 +1,6 @@
-flask
-flask_sqlalchemy
-werkzeug
-ortools
+Flask==2.3.2
+Flask-Login==0.6.2
+Flask-SQLAlchemy==3.0.3
+Werkzeug==2.3.6
+ortools==9.6.2534
+click==8.1.3
