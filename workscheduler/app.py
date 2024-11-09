@@ -129,28 +129,46 @@ def view_schedules():
             if not employees:
                 flash('Cannot generate schedules because there are no employees.', 'error')
                 return redirect(url_for('view_schedules'))
+            
             if request.form['action'] == 'generate':
-                shifts_per_day = int(request.form.get('shifts_per_day', 1))
-                max_shifts = int(request.form.get('max_shifts', 5))
-                success = generate_shifts(shifts_per_day=shifts_per_day, max_shifts_per_employee=max_shifts)
-            if success:
-                flash('Schedules generated successfully.', 'success')
+                # Create day requirements dictionary
+                days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                day_requirements = {}
+                
+                for day in days:
+                    day_requirements[day] = {
+                        'opening': int(request.form.get(f'opening_shifts_{day}', 1)),
+                        'midday': int(request.form.get(f'midday_shifts_{day}', 1)),
+                        'closing': int(request.form.get(f'closing_shifts_{day}', 1))
+                    }
+                    # Store in session for form persistence
+                    session[f'opening_shifts_{day}'] = day_requirements[day]['opening']
+                    session[f'midday_shifts_{day}'] = day_requirements[day]['midday']
+                    session[f'closing_shifts_{day}'] = day_requirements[day]['closing']
+                
+                session['max_shifts'] = int(request.form.get('max_shifts', 5))
+                
+                success = generate_shifts(
+                    day_requirements=day_requirements,
+                    max_shifts_per_employee=session['max_shifts']
+                )
+                
+                if success:
+                    flash('Schedules generated successfully.', 'success')
+                else:
+                    flash('No feasible schedule found.', 'error')
                 return redirect(url_for('view_schedules'))
-            else:
-                flash('No feasible schedule found.', 'error')
-                return redirect(url_for('view_schedules'))
-        else:
-            # Display the current schedules
-            employees = User.query.filter(User.role != 'admin').all()
-            schedules = {}
-            for employee in employees:
-                employee_schedule = Schedule.query.filter_by(username=employee.username).filter(
-                    Schedule.date.in_([d.strftime('%Y-%m-%d') for d in week_dates])).all()
-                # Build a date-to-shift mapping
-                date_to_shift = {s.date: s for s in employee_schedule}
-                schedules[employee.username] = date_to_shift
-            return render_template('admin_view_schedules.html', schedules=schedules, week_dates=week_dates,
-                                   users=employees, role=role, current_week=current_week)
+        
+        # Display the current schedules
+        employees = User.query.filter(User.role != 'admin').all()
+        schedules = {}
+        for employee in employees:
+            employee_schedule = Schedule.query.filter_by(username=employee.username).filter(
+                Schedule.date.in_([d.strftime('%Y-%m-%d') for d in week_dates])).all()
+            date_to_shift = {s.date: s for s in employee_schedule}
+            schedules[employee.username] = date_to_shift
+        return render_template('admin_view_schedules.html', schedules=schedules, week_dates=week_dates,
+                             current_week=current_week)
     else:
         # For regular users, display their own schedules
         user_schedule = Schedule.query.filter_by(username=username).filter(

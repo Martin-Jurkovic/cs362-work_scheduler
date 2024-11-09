@@ -8,76 +8,96 @@ def get_week_dates():
     today = datetime.date.today()
     # Find the next Monday
     days_until_monday = (7 - today.weekday()) % 7
-    start_day = today + datetime.timedelta(days=days_until_monday)
+    start_day = today + datetime.timedelta(days_until_monday)
     # Get the week dates from Monday to Sunday
     week_dates = [start_day + datetime.timedelta(days=i) for i in range(7)]
     return week_dates
 
-
 # Function to generate shifts using OR-Tools
-def generate_shifts(shifts_per_day=1, max_shifts_per_employee=5):
+def generate_shifts(day_requirements, max_shifts_per_employee=5):
+    """
+    day_requirements format:
+    {
+        'monday': {'opening': 2, 'midday': 3, 'closing': 2},
+        'tuesday': {'opening': 1, 'midday': 2, 'closing': 3},
+        ...
+    }
+    """
     week_dates = get_week_dates()
     employees = User.query.filter(User.role != 'admin').all()
     num_employees = len(employees)
     if num_employees == 0:
-        return False  # No employees to schedule
+        return False
+
     num_days = len(week_dates)
-    # max_shifts_per_employee = 5  # No more than 5 days per week
-    # shifts_per_day = 1  # Assuming one shift per day
+    days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
+    # Define shift types and their times
+    shift_types = {
+        0: ("08:00", "13:00"),  # Opening
+        1: ("12:00", "17:00"),  # Midday
+        2: ("16:00", "22:00")   # Closing
+    }
 
     # Create the model
     model = cp_model.CpModel()
 
-    # Variables: shifts[e][d] is True if employee 'e' works on day 'd'
+    # Variables: shifts[e][d][s] is True if employee 'e' works on day 'd' shift type 's'
     shifts = {}
     for e in range(num_employees):
         for d in range(num_days):
-            shifts[(e, d)] = model.NewBoolVar(f'shift_e{e}_d{d}')
+            for s in range(3):
+                shifts[(e, d, s)] = model.NewBoolVar(f'shift_e{e}_d{d}_s{s}')
 
     # Constraints:
-
-    # Each employee works at most one shift per day (inherent with binary variables)
-
-    # Each employee works at most 5 days in the week
-    for e in range(num_employees):
-        model.Add(sum(shifts[(e, d)] for d in range(num_days)) <= max_shifts_per_employee)
-
-    # Distribute shifts evenly among employees
-    min_shifts_per_employee = (num_days * shifts_per_day) // num_employees
-    for e in range(num_employees):
-        num_shifts_worked = sum(shifts[(e, d)] for d in range(num_days))
-        model.Add(num_shifts_worked >= min_shifts_per_employee)
-
-    # Ensure that each day has the required number of employees
+    # 1. Required number of employees per shift type per day
     for d in range(num_days):
-        model.Add(sum(shifts[(e, d)] for e in range(num_employees)) == shifts_per_day)
+        day_name = days[d]
+        day_req = day_requirements[day_name]
+        
+        # Opening shifts
+        model.Add(sum(shifts[(e, d, 0)] for e in range(num_employees)) == day_req['opening'])
+        # Midday shifts
+        model.Add(sum(shifts[(e, d, 1)] for e in range(num_employees)) == day_req['midday'])
+        # Closing shifts
+        model.Add(sum(shifts[(e, d, 2)] for e in range(num_employees)) == day_req['closing'])
+
+    # 2. Each employee can work at most one shift per day
+    for e in range(num_employees):
+        for d in range(num_days):
+            model.Add(sum(shifts[(e, d, s)] for s in range(3)) <= 1)
+
+    # 3. Each employee can work at most max_shifts_per_employee shifts per week
+    for e in range(num_employees):
+        model.Add(sum(shifts[(e, d, s)] 
+                     for d in range(num_days) 
+                     for s in range(3)) <= max_shifts_per_employee)
 
     # Solve the model
     solver = cp_model.CpSolver()
     status = solver.Solve(model)
 
-    # Store the schedule
-    if status == cp_model.FEASIBLE or status == cp_model.OPTIMAL:
+    if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
         # Clear existing schedules for the week
         Schedule.query.filter(Schedule.date.in_([d.strftime('%Y-%m-%d') for d in week_dates])).delete()
-        for e in range(num_employees):
-            for d in range(num_days):
-                if solver.Value(shifts[(e, d)]) == 1:
-                    day = week_dates[d]
-                    shift_start = datetime.datetime.combine(day, datetime.time(hour=8))
-                    shift_end = shift_start + datetime.timedelta(hours=8)
-                    schedule_entry = Schedule(
-                        username=employees[e].username,
-                        date=day.strftime('%Y-%m-%d'),
-                        start_time=shift_start.strftime('%H:%M'),
-                        end_time=shift_end.strftime('%H:%M')
-                    )
-                    db.session.add(schedule_entry)
+
+        # Create new schedules
+        for d in range(num_days):
+            for e in range(num_employees):
+                for s in range(3):
+                    if solver.Value(shifts[(e, d, s)]):
+                        start_time, end_time = shift_types[s]
+                        schedule = Schedule(
+                            username=employees[e].username,
+                            date=week_dates[d].strftime('%Y-%m-%d'),
+                            start_time=start_time,
+                            end_time=end_time
+                        )
+                        db.session.add(schedule)
+        
         db.session.commit()
         return True
-    else:
-        print("No feasible schedule found.")
-        return False
+    return False
 
 # Custom filter to format time in 12-hour format
 def datetimeformat(value):
