@@ -12,6 +12,11 @@
     <!-- Main Content -->
     <div class="content-container">
         <h1>My Schedule for {{ current_week }}</h1>
+        <div class="week-navigation">
+            <a href="{{ url_for('change_week', direction='previous') }}" class="nav-arrow">&larr; Previous Week</a>
+            <span class="current-week">{{ current_week }}</span>
+            <a href="{{ url_for('change_week', direction='next') }}" class="nav-arrow">Next Week &rarr;</a>
+        </div>
         <div class="schedule-table">
             <table>
                 <thead>

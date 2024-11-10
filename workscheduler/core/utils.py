@@ -4,26 +4,40 @@ from classes.user import User, db
 from classes.schedule import Schedule
 
 # Function to get the dates for the upcoming week (Monday to Sunday)
-def get_week_dates():
-    today = datetime.date.today()
+def get_week_dates(start_date=None):
+    """
+    Get list of dates for a week starting from Monday
+    
+    Args:
+        start_date (str, optional): Start date in 'YYYY-MM-DD' format. If None, uses today's date.
+    
+    Returns:
+        list: List of datetime.date objects from Monday to Sunday
+    """
+    if start_date is None:
+        today = datetime.date.today()
+    else:
+        today = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+    
     # Find the next Monday
     days_until_monday = (7 - today.weekday()) % 7
     start_day = today + datetime.timedelta(days_until_monday)
-    # Get the week dates from Monday to Sunday
+    # Get the week dates from Monday to Sunday 
     week_dates = [start_day + datetime.timedelta(days=i) for i in range(7)]
     return week_dates
 
 # Function to generate shifts using OR-Tools
-def generate_shifts(day_requirements, max_shifts_per_employee=5, active_employees=None):
+def generate_shifts(day_requirements, max_shifts_per_employee=5, active_employees=None, start_date=None):
     """
-    Generate shifts for active employees
+    Generate shifts for a specific week
     
     Args:
         day_requirements (dict): Shift requirements for each day
         max_shifts_per_employee (int): Maximum shifts per employee per week
-        active_employees (list): List of usernames for active employees. If None, all non-admin employees are used.
+        active_employees (list): List of usernames for active employees
+        start_date (str): Start date in 'YYYY-MM-DD' format
     """
-    week_dates = get_week_dates()
+    week_dates = get_week_dates(start_date)
     
     # Filter employees based on active_employees parameter
     if active_employees is not None:

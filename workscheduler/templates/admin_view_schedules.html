@@ -107,6 +107,13 @@
     }
     </style>
 
+        <!-- Add to both view_schedules.html and admin_view_schedules.html, right before the schedule table -->
+        <div class="week-navigation">
+            <a href="{{ url_for('change_week', direction='previous') }}" class="nav-arrow">&larr; Previous Week</a>
+            <span class="current-week">{{ current_week }}</span>
+            <a href="{{ url_for('change_week', direction='next') }}" class="nav-arrow">Next Week &rarr;</a>
+        </div>
+
         <!-- Schedules Table -->
         <div class="admin-schedule-table">
             <table>

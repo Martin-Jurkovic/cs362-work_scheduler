@@ -1,11 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from functools import wraps
-import datetime
-from ortools.sat.python import cp_model
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-import click
-from flask.cli import with_appcontext
+
+from datetime import timedelta, datetime, date  # Import date explicitly
 
 from classes.user import User, db
 from classes.schedule import Schedule
@@ -117,10 +112,13 @@ def reset_password():
 @app.route('/view_schedules', methods=['GET', 'POST'])
 @login_required
 def view_schedules():
+    if 'view_date' not in session:
+        session['view_date'] = date.today().strftime('%Y-%m-%d')
+    
+    week_dates = get_week_dates(session['view_date'])
     username = session['username']
     user = User.query.filter_by(username=username).first()
     role = user.role
-    week_dates = get_week_dates()
     current_week = f"{week_dates[0].strftime('%B %d, %Y')} - {week_dates[-1].strftime('%B %d, %Y')}"
 
     if role == 'admin':
@@ -159,7 +157,8 @@ def view_schedules():
                 success = generate_shifts(
                     day_requirements=day_requirements,
                     max_shifts_per_employee=session['max_shifts'],
-                    active_employees=[emp.username for emp in active_employees]  # Pass only active employees
+                    active_employees=[emp.username for emp in active_employees],  # Pass only active employees
+                    start_date=session['view_date']  # Add this line
                 )
                 
                 if success:
@@ -355,6 +354,20 @@ def toggle_employee_status():
     session['disabled_employees'] = disabled_employees
     
     return jsonify({'status': 'success'})
+
+# Add new route for week navigation
+@app.route('/change_week/<direction>')
+@login_required
+def change_week(direction):
+    current_date = datetime.strptime(session.get('view_date', date.today().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    
+    if direction == 'next':
+        new_date = current_date + timedelta(weeks=1)
+    else:  # previous
+        new_date = current_date - timedelta(weeks=1)
+    
+    session['view_date'] = new_date.strftime('%Y-%m-%d')
+    return redirect(url_for('view_schedules'))
 
 
 if __name__ == '__main__':
