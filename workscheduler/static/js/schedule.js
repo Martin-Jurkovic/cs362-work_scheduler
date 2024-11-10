@@ -83,3 +83,25 @@ function dropShift(ev) {
         }
     });
 }
+
+// Add to schedule.js
+function toggleEmployee(username) {
+    const row = document.getElementById(`row-${username}`);
+    
+    fetch('/toggle_employee_status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            disabled: !row.classList.contains('disabled-employee')
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            row.classList.toggle('disabled-employee');
+        }
+    });
+}

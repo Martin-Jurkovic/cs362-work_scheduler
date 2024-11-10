@@ -649,3 +649,23 @@ footer {
 .shift-block:hover {
     background: #45a049;
 }
+
+/* Add to styles.css */
+.disabled-employee {
+    background-color: #e0e0e0 !important;
+}
+
+.disabled-employee td {
+    background-color: #e0e0e0 !important;
+    color: #666;
+    font-style: italic;
+}
+
+.employee-name {
+    cursor: pointer;
+    user-select: none;
+}
+
+.employee-name:hover {
+    text-decoration: underline;
+}

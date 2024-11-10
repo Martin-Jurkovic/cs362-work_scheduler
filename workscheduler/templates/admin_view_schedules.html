@@ -120,8 +120,8 @@
                 </thead>
                 <tbody>
                     {% for user, schedule in schedules.items() %}
-                    <tr data-employee="{{ user }}">
-                        <td>{{ user }}</td>
+                    <tr data-employee="{{ user }}" id="row-{{ user }}" class="{% if user in disabled_employees %}disabled-employee{% endif %}">
+                        <td class="employee-name" onclick="toggleEmployee('{{ user }}')">{{ user }}</td>
                         {% for date in week_dates %}
                         <td class="shift-cell" 
                             ondrop="dropShift(event)" 

@@ -14,17 +14,26 @@ def get_week_dates():
     return week_dates
 
 # Function to generate shifts using OR-Tools
-def generate_shifts(day_requirements, max_shifts_per_employee=5):
+def generate_shifts(day_requirements, max_shifts_per_employee=5, active_employees=None):
     """
-    day_requirements format:
-    {
-        'monday': {'opening': 2, 'midday': 3, 'closing': 2},
-        'tuesday': {'opening': 1, 'midday': 2, 'closing': 3},
-        ...
-    }
+    Generate shifts for active employees
+    
+    Args:
+        day_requirements (dict): Shift requirements for each day
+        max_shifts_per_employee (int): Maximum shifts per employee per week
+        active_employees (list): List of usernames for active employees. If None, all non-admin employees are used.
     """
     week_dates = get_week_dates()
-    employees = User.query.filter(User.role != 'admin').all()
+    
+    # Filter employees based on active_employees parameter
+    if active_employees is not None:
+        employees = User.query.filter(
+            User.role != 'admin',
+            User.username.in_(active_employees)
+        ).all()
+    else:
+        employees = User.query.filter(User.role != 'admin').all()
+    
     num_employees = len(employees)
     if num_employees == 0:
         return False

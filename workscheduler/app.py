@@ -131,6 +131,14 @@ def view_schedules():
                 return redirect(url_for('view_schedules'))
             
             if request.form['action'] == 'generate':
+                # Filter out disabled employees
+                disabled_employees = session.get('disabled_employees', [])
+                active_employees = [emp for emp in employees if emp.username not in disabled_employees]
+                
+                if not active_employees:
+                    flash('Cannot generate schedules because all employees are disabled.', 'error')
+                    return redirect(url_for('view_schedules'))
+                
                 # Create day requirements dictionary
                 days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
                 day_requirements = {}
@@ -150,7 +158,8 @@ def view_schedules():
                 
                 success = generate_shifts(
                     day_requirements=day_requirements,
-                    max_shifts_per_employee=session['max_shifts']
+                    max_shifts_per_employee=session['max_shifts'],
+                    active_employees=[emp.username for emp in active_employees]  # Pass only active employees
                 )
                 
                 if success:
@@ -167,8 +176,11 @@ def view_schedules():
                 Schedule.date.in_([d.strftime('%Y-%m-%d') for d in week_dates])).all()
             date_to_shift = {s.date: s for s in employee_schedule}
             schedules[employee.username] = date_to_shift
-        return render_template('admin_view_schedules.html', schedules=schedules, week_dates=week_dates,
-                             current_week=current_week)
+        return render_template('admin_view_schedules.html', 
+                              schedules=schedules, 
+                              week_dates=week_dates,
+                              current_week=current_week,
+                              disabled_employees=session.get('disabled_employees', []))
     else:
         # For regular users, display their own schedules
         user_schedule = Schedule.query.filter_by(username=username).filter(
@@ -322,6 +334,27 @@ def reassign_shift():
         db.session.commit()
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error'}), 404
+
+@app.route('/toggle_employee_status', methods=['POST'])
+@admin_required
+def toggle_employee_status():
+    data = request.get_json()
+    username = data.get('username')
+    disabled = data.get('disabled')
+    
+    if 'disabled_employees' not in session:
+        session['disabled_employees'] = []
+    
+    disabled_employees = session['disabled_employees']
+    
+    if disabled and username not in disabled_employees:
+        disabled_employees.append(username)
+    elif not disabled and username in disabled_employees:
+        disabled_employees.remove(username)
+    
+    session['disabled_employees'] = disabled_employees
+    
+    return jsonify({'status': 'success'})
 
 
 if __name__ == '__main__':
